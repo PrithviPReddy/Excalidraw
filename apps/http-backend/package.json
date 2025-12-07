@@ -7,12 +7,15 @@
     "dev": "pnpm run build && pnpm run start"
   },
   "devDependencies": {
+    "@repo/backend-common": "workspace:*",
+    "@repo/common": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/jsonwebtoken": "^9.0.10"
   },
   "dependencies": {
     "@types/express": "^5.0.6",
     "express": "^5.2.1",
-    "jsonwebtoken": "^9.0.3"
+    "jsonwebtoken": "^9.0.3",
+    "zod": "^4.1.13"
   }
 }
