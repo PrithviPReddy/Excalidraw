@@ -7,8 +7,11 @@
     "dev": "pnpm run build && pnpm run start"
   },
   "devDependencies": {
+    "@repo/backend-common": "workspace:*",
+    "@repo/common": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@repo/backend-common" : "workspace:*"
+    "@types/jsonwebtoken": "^9.0.10",
+    "@repo/db" : "workspace:*"
   },
   "dependencies": {
     "@types/jsonwebtoken": "^9.0.10",
