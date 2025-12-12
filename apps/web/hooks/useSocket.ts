@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { WS_URL } from "../app/config";
-import { escape } from "querystring";
+import jwt  from "jsonwebtoken";
+import { JWT_SECRET } from "@repo/backend-common/config"
 
 export function useSocket(){
     const [loading , setLoading] = useState(true)
@@ -8,7 +9,7 @@ export function useSocket(){
 
 
     useEffect(()=>{
-        const ws = new WebSocket(WS_URL)
+        const ws = new WebSocket(`${WS_URL}?token=${TOKEN}`)
 
         ws.onopen = () =>{
             setLoading(false)
