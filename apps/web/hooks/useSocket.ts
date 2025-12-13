@@ -9,7 +9,7 @@ export function useSocket(){
 
 
     useEffect(()=>{
-        const ws = new WebSocket(`${WS_URL}?token=${TOKEN}`)
+        const ws = new WebSocket(`${WS_URL}?token={TOKEN}`)
 
         ws.onopen = () =>{
             setLoading(false)

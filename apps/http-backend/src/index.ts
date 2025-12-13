@@ -71,9 +71,13 @@ app.post("/signin", async function(req,res){
 
 
 
-    jwt.sign({
+    const token = await jwt.sign({
         userId:user?.id
     },JWT_SECRET)
+
+    res.json({
+        token : token
+    })
 
 })
 
