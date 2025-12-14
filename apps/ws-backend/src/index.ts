@@ -46,6 +46,9 @@ wss.on('connection', function connection(ws:WebSocket,request) {
   const userId  = checkUser(token);
   
   if(!userId){
+    console.log("WSS closing")
+    console.log(userId)
+    
     ws.close()
     return
   }
