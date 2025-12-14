@@ -11,6 +11,7 @@ export default function Canvas({roomId,socket} : {
     const [selectedTool, setSelectedTool] = useState<
     "rect" | "circle" | "pencil"
   >("rect");
+    (window as any).selectedTool = selectedTool;
 
     useEffect(() => {
         if (canvasRef.current){
@@ -52,19 +53,28 @@ export function TopBar({
     >
       <IconButton
         icon={<Square size={18} />}
-        onClick={() => onSelectTool("rect")}
+        onClick={() => {
+          (window as any).selectedTool = selectedTool;
+          onSelectTool("rect")
+        }}
         active={selectedTool === "rect"}
       />
 
       <IconButton
         icon={<Circle size={18} />}
-        onClick={() => onSelectTool("circle")}
+        onClick={() => {
+          (window as any).selectedTool = selectedTool;
+          onSelectTool("circle")
+        }}
         active={selectedTool === "circle"}
       />
 
       <IconButton
         icon={<Pencil size={18} />}
-        onClick={() => onSelectTool("pencil")}
+        onClick={() => {
+          (window as any).selectedTool = selectedTool;
+          onSelectTool("pencil")
+        }}
         active={selectedTool === "pencil"}
       />
     </div>
