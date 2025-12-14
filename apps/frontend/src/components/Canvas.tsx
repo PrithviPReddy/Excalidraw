@@ -2,6 +2,7 @@ import { initDraw } from "@/draw";
 import { useEffect, useRef, useState } from "react";
 import { IconButton } from "./IconButton";
 import { Circle, Pencil, Square } from "lucide-react";
+export type Tool = "rect" | "circle" | "pencil"
 
 export default function Canvas({roomId,socket} : {
     roomId : string

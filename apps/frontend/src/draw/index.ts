@@ -3,7 +3,7 @@ import axios from "axios"
 import { MessagesSquare, X } from "lucide-react"
 import { serverHooks } from "next/dist/server/app-render/entry-base"
 
-type Shape =
+export type Shape =
   | {
       type: "rect";
       x: number;
@@ -20,12 +20,11 @@ type Shape =
     };
 
 
-export function initDraw(canvas: HTMLCanvasElement,roomId:string,socket:WebSocket) {
-    console.log("initDraw called");
+export async function initDraw(canvas: HTMLCanvasElement,roomId:string,socket:WebSocket) {
 
     const ctx = canvas.getContext("2d");
     
-    let existingShapes : Shape[] = []
+    let existingShapes : Shape[] = await getExistingShapes(roomId)
     
     if (!ctx) {
         return
@@ -40,6 +39,8 @@ export function initDraw(canvas: HTMLCanvasElement,roomId:string,socket:WebSocke
             clearCanvas(existingShapes,canvas,ctx)
         }
     } 
+
+    clearCanvas(existingShapes, canvas, ctx);
     
     ctx.fillStyle = "rgba(0, 0, 0)"
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -137,7 +138,7 @@ export function initDraw(canvas: HTMLCanvasElement,roomId:string,socket:WebSocke
     })            
 }
 
-function clearCanvas(existingShapes:Shape[],canvas:HTMLCanvasElement,ctx:CanvasRenderingContext2D){
+export function clearCanvas(existingShapes:Shape[],canvas:HTMLCanvasElement,ctx:CanvasRenderingContext2D){
     ctx.clearRect(0,0,canvas.width,canvas.height);
     ctx.fillStyle = "rgba(0,0,0)"
     ctx.fillRect(0,0,canvas.width,canvas.height)
@@ -163,7 +164,7 @@ function clearCanvas(existingShapes:Shape[],canvas:HTMLCanvasElement,ctx:CanvasR
     })
 }
 
-async function getExistingShapes(roomId: string) {
+export async function getExistingShapes(roomId: string) {
     const res = await axios.get(`${HTTP_BACKEND}/chats/${roomId}`);
     const messages = res.data.messages;
 
