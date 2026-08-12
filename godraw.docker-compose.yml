@@ -1,0 +1,96 @@
+# Save as: <GoDraw repo root>/docker-compose.yml
+#
+#   docker compose up --build
+#
+# Then: web on http://localhost:3000, frontend on http://localhost:3002,
+# http-backend on :3001, ws-backend on :8080.
+#
+# Ports are pinned to those exact numbers because apps/web/app/config.ts
+# hardcodes BACKEND_URL=http://localhost:3001 and WS_URL=ws://localhost:8080.
+# Those URLs are resolved by the browser, not by the containers, so remapping
+# them on the host side breaks the app.
+
+services:
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: devpassword
+      POSTGRES_DB: godraw
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    # depends_on alone waits only for the container to exist, not for Postgres
+    # to accept connections — without this the backends crash on first query.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dev -d godraw"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Runs `prisma migrate deploy` once, then exits. Keeping migrations out of the
+  # app containers avoids several replicas racing to migrate the same database.
+  migrate:
+    build:
+      context: .
+      target: builder
+    working_dir: /app/packages/db
+    environment:
+      DATABASE_URL: postgresql://dev:devpassword@postgres:5432/godraw
+    command: ["pnpm", "exec", "prisma", "migrate", "deploy"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  http-backend:
+    build:
+      context: .
+      target: http-backend
+    ports:
+      - "3001:3001"
+    environment:
+      # Host is "postgres", not "localhost" — inside a container localhost is
+      # the container itself.
+      DATABASE_URL: postgresql://dev:devpassword@postgres:5432/godraw
+      JWT_SECRET: ${JWT_SECRET:-dev-secret-change-me}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  ws-backend:
+    build:
+      context: .
+      target: ws-backend
+    ports:
+      - "8080:8080"
+    environment:
+      DATABASE_URL: postgresql://dev:devpassword@postgres:5432/godraw
+      JWT_SECRET: ${JWT_SECRET:-dev-secret-change-me}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  web:
+    build:
+      context: .
+      target: web
+    ports:
+      - "3000:3000"
+    depends_on:
+      - http-backend
+      - ws-backend
+
+  frontend:
+    build:
+      context: .
+      target: frontend
+    ports:
+      - "3002:3000"
+    depends_on:
+      - http-backend
+      - ws-backend
+
+volumes:
+  pgdata:

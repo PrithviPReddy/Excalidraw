@@ -1,0 +1,26 @@
+# Save as: <GoDraw repo root>/.dockerignore
+# Mandatory. Without it, `COPY . .` copies your local node_modules, whose pnpm
+# symlinks point at host paths that do not exist inside the image.
+
+node_modules
+**/node_modules
+.next
+**/.next
+dist
+**/dist
+*.tsbuildinfo
+**/*.tsbuildinfo
+.turbo
+**/.turbo
+.git
+.gitignore
+.vscode
+.env
+.env.*
+!.env.example
+Dockerfile
+.dockerignore
+docker-compose.yml
+README.md
+**/README.md
+npm-debug.log*
